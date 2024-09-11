@@ -1,8 +1,8 @@
 /**
  * Hash table class
  *
- * @author Krishna Patel
- * @version 1
+ * @author <Put Something Here>
+ * @version <Put Something Here>
  */
 
 public class Hash {
@@ -18,8 +18,6 @@ public class Hash {
      * @return
      *         The hash function value (the home slot in the table for this key)
      */
-	
-	
     public static int h(String s, int length) {
         int intLength = s.length() / 4;
         long sum = 0;
@@ -41,4 +39,6 @@ public class Hash {
 
         return (int)(Math.abs(sum) % length);
     }
+    
+    
 }

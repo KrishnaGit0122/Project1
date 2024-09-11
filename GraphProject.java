@@ -3,8 +3,8 @@
  * Main for Graph project (CS3114/CS5040 Fall 2023 Project 4).
  * Usage: java GraphProject <init-hash-size> <command-file>
  *
- * @author Krishna Patel
- * @version 1
+ * @author Nitin Ankareddy and Krishna Patel
+ * @version Sep 3 2024
  *
  */
 
@@ -28,11 +28,29 @@
 // letter of this restriction.
 
 public class GraphProject {
+    
+    
     /**
      * @param args
      *            Command line parameters
      */
     public static void main(String[] args) {
-        // This is the main file for the program.
+        // Check if exactly two arguments are passed
+        if (args.length != 2) {
+            System.out.println("Please provide exactly two arguments.");
+            return;
+        }
+        Controller controller = new Controller();
+        CommandProcessor cp = new CommandProcessor(controller);
+        
+       
+
+        // Access the two arguments
+        int firstArgument = Integer.parseInt(args[0]);
+        String secondArgument = args[1];
+        
+        cp.readLines(secondArgument);
+
+        // You can add additional logic here to process the arguments
     }
 }
