@@ -11,7 +11,7 @@ public class CommandProcessorTest extends student.TestCase {
     private Controller controller;
     
     public void setUp() {
-        controller = new Controller();
+        controller = new Controller(5);
         cp = new CommandProcessor(controller);
     }
     

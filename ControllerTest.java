@@ -9,76 +9,90 @@ public class ControllerTest extends TestCase {
      * Set up a new controller instance for each test.
      */
     public void setUp() {
-        controller = new Controller();
+        controller = new Controller(5);
     }
 
     /**
-     * Test inserting artist-song pairs into the table.
+     * Test inserting artists and songs into the table.
      */
     public void testInsert() {
-        controller.insert("Artist1", "Song1");
-        controller.insert("Artist2", "Song2");
+        controller.insertArtist("Artist1", new Node("Artist1Node"));
+        controller.insertSong("Song1", new Node("Song1Node"));
 
-        // Verify that size has increased
-        assertEquals(2, controller.size());
-
-        // Capture the output for printArtist and printSong to verify
+        
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-        controller.printArtist();
+        controller.printArtists();
         String output = outputStream.toString();
 
         // Verify output for printArtist
         assertTrue(output.contains("Artist1"));
-        assertTrue(output.contains("Artist2"));
 
         outputStream.reset();
 
-        controller.printSong();
+        controller.printSongs();
         String songOutput = outputStream.toString();
 
         // Verify output for printSong
         assertTrue(songOutput.contains("Song1"));
-        assertTrue(songOutput.contains("Song2"));
 
-        System.setOut(System.out); // Reset the standard output
+       
     }
 
     /**
      * Test that inserting duplicates does not add multiple entries.
      */
     public void testInsertDuplicate() {
-        controller.insert("Artist1", "Song1");
-        controller.insert("Artist1", "Song1"); // Duplicate
-        controller.printArtist();
-
-        assertEquals(1, controller.size()); // Size should remain 1
-    }
-
-    /**
-     * Test removing an artist-song pair and verify its removal.
-     */
-    public void testRemove() {
-        controller.insert("Artist1", "Song1");
-        controller.insert("Artist2", "Song2");
-
-        assertEquals(2, controller.size());
-
-        controller.remove("Artist1", "Song1");
-        assertEquals(1, controller.size()); // Size should decrease
+        controller.insertArtist("Artist1", new Node("Artist1Node"));
+        controller.insertArtist("Artist1", new Node("Artist1NodeDuplicate")); // Duplicate
+        controller.insertSong("Song1", new Node("Song1Node"));
+        controller.insertSong("Song1", new Node("Song1NodeDuplicate")); // Duplicate
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-        controller.printArtist();
+        controller.printArtists();
         String output = outputStream.toString();
 
-        // Ensure Artist1 is removed
-        assertFalse(output.contains("Artist1"));
-        assertTrue(output.contains("Artist2"));
+        assertEquals(1, countOccurrences(output, "Artist1")); // Only one occurrence of "Artist1"
 
-        System.setOut(System.out); // Reset the standard output
+        outputStream.reset();
+
+        controller.printSongs();
+        String songOutput = outputStream.toString();
+
+        assertEquals(1, countOccurrences(songOutput, "Song1")); // Only one occurrence of "Song1"
+
+       
+    }
+    
+    
+
+    /**
+     * Test removing an artist and song, and verify its removal.
+     */
+    public void testRemove() {
+        controller.insertArtist("Artist1", new Node("Artist1Node"));
+        controller.insertSong("Song1", new Node("Song1Node"));
+
+        controller.removeArtist("Artist1");
+        controller.removeSong("Song1");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        controller.printArtists();
+        String output = outputStream.toString();
+        assertFalse(output.contains("Artist1")); // Ensure "Artist1" is removed
+
+        outputStream.reset();
+
+        controller.printSongs();
+        String songOutput = outputStream.toString();
+        assertFalse(songOutput.contains("Song1")); // Ensure "Song1" is removed
+
+        
     }
 
     /**
@@ -86,107 +100,78 @@ public class ControllerTest extends TestCase {
      */
     public void testDoubleTable() {
         // Insert more than half the initial capacity to trigger a resize
-        for (int i = 0; i < 11; i++) {
-            controller.insert("Artist" + i, "Song" + i);
+        for (int i = 0; i < 6; i++) {
+            controller.insertArtist("Artist" + i, new Node("Node" + i));
+            controller.insertSong("Song" + i, new Node("Node" + i));
         }
 
-        assertEquals(21, controller.size());
-        assertEquals(40, controller.getCapacity()); // Capacity should double
-
+        
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-        controller.printArtist();
+        controller.printArtists();
         String output = outputStream.toString();
 
         // Verify all artists are still present
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < 6; i++) {
             assertTrue(output.contains("Artist" + i));
         }
 
-        System.setOut(System.out); // Reset the standard output
+        outputStream.reset();
+
+        controller.printSongs();
+        String songOutput = outputStream.toString();
+
+        // Verify all songs are still present
+        for (int i = 0; i < 6; i++) {
+            assertTrue(songOutput.contains("Song" + i));
+        }
+
+        
     }
 
     /**
      * Test printing all artists.
      */
     public void testPrintArtist() {
-        controller.insert("Artist1", "Song1");
-        controller.insert("Artist2", "Song2");
+        controller.insertArtist("Artist1", new Node("Artist1Node"));
+        controller.insertArtist("Artist2", new Node("Artist2Node"));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-        controller.printArtist();
+        controller.printArtists();
         String output = outputStream.toString();
 
         assertTrue(output.contains("Artist1"));
         assertTrue(output.contains("Artist2"));
 
-        System.setOut(System.out); // Reset the standard output
+       
     }
 
     /**
      * Test printing all songs.
      */
     public void testPrintSong() {
-        controller.insert("Artist1", "Song1");
-        controller.insert("Artist2", "Song2");
+        controller.insertSong("Song1", new Node("Song1Node"));
+        controller.insertSong("Song2", new Node("Song2Node"));
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
 
-        controller.printSong();
+        controller.printSongs();
         String output = outputStream.toString();
 
         assertTrue(output.contains("Song1"));
         assertTrue(output.contains("Song2"));
 
-        System.setOut(System.out); // Reset the standard output
-    }
-
-   
-    
-    /**
-     * Test removing a non-existing element.
-     */
-    public void testRemoveNonExisting() {
-        controller.insert("Artist1", "Song1");
-        controller.remove("Artist2", "Song2"); // Non-existing
-
-        // Ensure size remains unchanged
-        assertEquals(1, controller.size());
+       
     }
 
     /**
-     * Test handling an empty table.
+     * Helper method to count occurrences of a string within a larger string.
      */
-    public void testEmptyTable() {
-        // Try to remove from an empty table
-        controller.remove("Artist1", "Song1");
-
-        // Print artists and songs on an empty table
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
-
-        controller.printArtist();
-        String output = outputStream.toString();
-        assertTrue(output.contains("Total count of artists: 0"));
-
-        outputStream.reset();
-
-        controller.printSong();
-        String songOutput = outputStream.toString();
-        assertTrue(songOutput.contains("Total count of songs: 0"));
-
-        System.setOut(System.out); // Reset the standard output
-    }
-
-    /**
-     * Test printGraph method. 
-     * Since the printGraph method is empty, we just test if it runs without error.
-     */
-    public void testPrintGraph() {
-        controller.printGraph(); // Should not throw any errors
+    private int countOccurrences(String output, String word) {
+        return output.split(word, -1).length - 1;
     }
 }

@@ -21,21 +21,22 @@ public class CommandProcessor {
                  switch(cmd) {
                     case "insert"://In the case of insert change our delimiter from white space to <SEP> 
                        scancmd.useDelimiter("<SEP>");
-                       String artist = scancmd.next();//Get the artist since it is before <SEP>
-                       String song = scancmd.next();//Get the song title that follows <SEP>
-                       controller.insert(artist, song);
+                       String artist = scancmd.next().trim();//Get the artist since it is before <SEP>
+                       String song = scancmd.next().trim();//Get the song title that follows <SEP>
+                       controller.insertArtist(artist, new Node(artist));
+                       controller.insertSong(song, new Node(song));
                     break;
                     case "remove":
-                       type = scancmd.next();//Get the mode of deletion artist/song
-                       String token = scancmd.nextLine();
+                       type = scancmd.next().trim();//Get the mode of deletion artist/song
+                       String token = scancmd.nextLine().trim();
                        //Since both artist titles and song titles have spaces
                        //get the rest of the line for the song/artist name
                        switch(type) {
                           case "artist":
-                             controller.remove(type, token);
+                             controller.removeArtist(token);
                           break;
                           case "song":
-                             controller.remove(type, token);
+                             controller.removeSong(token);
                           break;
                           default ://Error bad token
                              System.out.println("Error bad remove type " + type);
@@ -46,10 +47,11 @@ public class CommandProcessor {
                        type = scancmd.next();//get the type of print command
                        switch(type) {
                           case "artist":
-                             controller.printArtist();
+                             //System.out.println("PRINTING ARTISTS");
+                             controller.printArtists();
                           break;
                           case "song":
-                             controller.printSong();
+                             controller.printSongs();
                           break;
                           case "graph":
                              controller.printGraph();

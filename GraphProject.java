@@ -40,8 +40,7 @@ public class GraphProject {
             System.out.println("Please provide exactly two arguments.");
             return;
         }
-        Controller controller = new Controller();
-        CommandProcessor cp = new CommandProcessor(controller);
+        
         
        
 
@@ -49,8 +48,10 @@ public class GraphProject {
         int firstArgument = Integer.parseInt(args[0]);
         String secondArgument = args[1];
         
+        Controller controller = new Controller(firstArgument);
+        CommandProcessor cp = new CommandProcessor(controller);
+        
         cp.readLines(secondArgument);
 
-        // You can add additional logic here to process the arguments
     }
 }
