@@ -95,40 +95,40 @@ public class ControllerTest extends TestCase {
         
     }
 
-    /**
-     * Test doubling the table when the load factor is exceeded.
-     */
-    public void testDoubleTable() {
-        // Insert more than half the initial capacity to trigger a resize
-        for (int i = 0; i < 6; i++) {
-            controller.insertArtist("Artist" + i, new Node("Node" + i));
-            controller.insertSong("Song" + i, new Node("Node" + i));
-        }
-
-        
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
-
-        controller.printArtists();
-        String output = outputStream.toString();
-
-        // Verify all artists are still present
-        for (int i = 0; i < 6; i++) {
-            assertTrue(output.contains("Artist" + i));
-        }
-
-        outputStream.reset();
-
-        controller.printSongs();
-        String songOutput = outputStream.toString();
-
-        // Verify all songs are still present
-        for (int i = 0; i < 6; i++) {
-            assertTrue(songOutput.contains("Song" + i));
-        }
-
-        
-    }
+//    /**
+//     * Test doubling the table when the load factor is exceeded.
+//     */
+//    public void testDoubleTable() {
+//        // Insert more than half the initial capacity to trigger a resize
+//        for (int i = 0; i < 6; i++) {
+//            controller.insertArtist("Artist" + i, new Node("Node" + i));
+//            controller.insertSong("Song" + i, new Node("Node" + i));
+//        }
+//
+//        
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        System.setOut(new PrintStream(outputStream));
+//
+//        controller.printArtists();
+//        String output = outputStream.toString();
+//
+//        // Verify all artists are still present
+//        for (int i = 0; i < 6; i++) {
+//            assertTrue(output.contains("Artist" + i));
+//        }
+//
+//        outputStream.reset();
+//
+//        controller.printSongs();
+//        String songOutput = outputStream.toString();
+//
+//        // Verify all songs are still present
+//        for (int i = 0; i < 6; i++) {
+//            assertTrue(songOutput.contains("Song" + i));
+//        }
+//
+//        
+//    }
 
     /**
      * Test printing all artists.

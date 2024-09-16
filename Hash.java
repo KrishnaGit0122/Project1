@@ -79,17 +79,17 @@ public class Hash {
 //        }
         
         // check if we need to make the array size bigger
-        if (this.numberOfRecords >= this.capacity/2 ) {
+        if (this.numberOfRecords + 1 > this.capacity/2 ) {
             this.doubleSize(isSong);
             
         }
         // use sfold to calculate the new index to put the new data in
-        int index = h(key, capacity);
+        int home = h(key, capacity);
         // variable to aid in quadratic probing
         int j = 1;
         
        
-       
+       int index = home;
         // first check if the index you are looking at is not empty and not tomb stone
         while( allRecords[index] != null && allRecords[index] != TOMBSTONE) {
             // check if the same key is present already as a duplicate
@@ -105,7 +105,7 @@ public class Hash {
             }
             
             // if the index is already taken, use quadratic probing to find a new index
-            index = (index + j * j) % capacity;
+            index = (home + j * j) % capacity;
             j++;  
         }
         
@@ -174,9 +174,10 @@ public class Hash {
             throw new NullPointerException();
         }
         
-        int index = h(key, capacity);
+        int home = h(key, capacity);
         int j = 1;
         
+        int index = home;
         
         
         while( allRecords[index] != null) {
@@ -195,7 +196,7 @@ public class Hash {
             }
             
             // if the index is already taken, use quadratic probing to find a new index
-            index = (index + j * j) % capacity;
+            index = (home + j * j) % capacity;
             j++;  
         }
         

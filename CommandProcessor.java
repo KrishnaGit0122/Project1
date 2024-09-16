@@ -23,8 +23,16 @@ public class CommandProcessor {
                        scancmd.useDelimiter("<SEP>");
                        String artist = scancmd.next().trim();//Get the artist since it is before <SEP>
                        String song = scancmd.next().trim();//Get the song title that follows <SEP>
+                       
                        controller.insertArtist(artist, new Node(artist));
                        controller.insertSong(song, new Node(song));
+                       
+              
+
+//                       if (!controller.insertSong(song, new Node(song)) && (!controller.insertArtist(artist, new Node(artist)))) {
+//                           System.out.println("|"+ artist + "<SEP>" + song + "| duplicates a record already in the database.");
+//                       }
+                       
                     break;
                     case "remove":
                        type = scancmd.next().trim();//Get the mode of deletion artist/song

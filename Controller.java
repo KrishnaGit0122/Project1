@@ -8,13 +8,13 @@ public class Controller {
         this.songs = new Hash(initialCapacity);
     }
     
-    public void insertArtist(String artist, Node artistNode) {
-        artists.insert(artist, artistNode, false);
+    public boolean insertArtist(String artist, Node artistNode) {
+        return artists.insert(artist, artistNode, false);
         
     }
     
-    public void insertSong(String song, Node songNode) {
-        songs.insert(song, songNode, true);
+    public boolean insertSong(String song, Node songNode) {
+        return songs.insert(song, songNode, true);
     }
     
     public void removeArtist(String artist) {

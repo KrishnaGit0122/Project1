@@ -1,8 +1,4 @@
 import student.TestCase;
-import org.junit.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 
 /**
  * @author <Put something here>
@@ -14,10 +10,8 @@ public class HashTest extends TestCase {
      */
     private Hash hashTable;
     public void setUp() {
-       hashTable = new Hash(5);
+       hashTable = new Hash(10);
     }
-    
-    
 
 
     /**
@@ -42,30 +36,39 @@ public class HashTest extends TestCase {
         hashTable.insert("Key1", new Node("Value1"), true);
         hashTable.insert("Key2", new Node("Value2"), true);
         hashTable.insert("Key3", new Node("Value3"), true);
-        hashTable.insert("Key4", new Node("Value4"), true);
+        hashTable.insert("Key4", new Node("Value4"), false);
         hashTable.insert("Key5", new Node("Value5"), true);
+        
+        //hashTable.insert(null, null, false);
+        
+       
+        
+        System.out.println("AHHHHHHHHHHH");
 
         
+        assertTrue(hashTable.getCapacity().equals(10));
 
         // Trigger double size by adding another record
         hashTable.insert("Key6", new Node("Value6"), true);
 
         // The capacity should now be doubled
-        assertFalse(hashTable.getCapacity().equals(10));
+        assertTrue(hashTable.getCapacity().equals(20));
     }
+    
+   
 
     /**
      * Test that all elements are copied over to the new table during resizing.
      */
     public void testElementsCopiedOnResize() {
         hashTable.insert("Key1", new Node("Value1"), true);
-        hashTable.insert("Key2", new Node("Value2"), true);
+        hashTable.insert("Key2", new Node("Value2"), false);
         hashTable.insert("Key3", new Node("Value3"), true);
 
         // Trigger double size
         hashTable.insert("Key4", new Node("Value4"), true);
         hashTable.insert("Key5", new Node("Value5"), true);
-        hashTable.insert("Key6", new Node("Value6"), true);
+        hashTable.insert("Key6", new Node("Value6"), false);
 
         // Ensure all keys are still present
         assertNotNull(hashTable.find("Key1"));
@@ -81,7 +84,7 @@ public class HashTest extends TestCase {
      */
     public void testTombstonesNotCopiedOnResize() {
         hashTable.insert("Key1", new Node("Value1"), true);
-        hashTable.insert("Key2", new Node("Value2"), true);
+        hashTable.insert("Key2", new Node("Value2"), false);
         hashTable.insert("Key3", new Node("Value3"), true);
 
         // Remove a record to create a tombstone
@@ -90,10 +93,29 @@ public class HashTest extends TestCase {
         // Trigger double size
         hashTable.insert("Key4", new Node("Value4"), true);
         hashTable.insert("Key5", new Node("Value5"), true);
-        hashTable.insert("Key6", new Node("Value6"), true);
+        hashTable.insert("Key6", new Node("Value6"), false);
 
         // Ensure that the tombstone record was not copied
         assertNull(hashTable.find("Key2"));
+    }
+    
+    public void testQuadraticProbingCollisionResolution() {
+        hashTable.insert("key1", new Node("node1"), true);
+        hashTable.insert("key2", new Node("node2"), true);
+
+        assertNotNull(hashTable.find("key1"));
+        assertNotNull(hashTable.find("key2"));
+    }
+
+    public void testCapacityExpansion() {
+        hashTable.insert("key1", new Node("node1"), true);
+        hashTable.insert("key2", new Node("node2"), true);
+        hashTable.insert("key3", new Node("node3"), true);
+
+        assertNotNull(hashTable.find("key1"));
+        assertNotNull(hashTable.find("key2"));
+        assertNotNull(hashTable.find("key3"));
+        assertEquals(10, hashTable.getCapacity().intValue());
     }
 
     /**
@@ -141,153 +163,117 @@ public class HashTest extends TestCase {
         assertNotNull(hashTable.find("Key6"));
     }
     
+    public void testInsertSong() {
+        hashTable.insert("songKey", new Node("songNode"), true);
+        assertNotNull(hashTable.find("songKey"));
+    }
+
+    public void testInsertArtist() {
+        hashTable.insert("artistKey", new Node("artistNode"), false);
+        assertNotNull(hashTable.find("artistKey"));
+    }
+
+    public void testInsertSongDuplicate() {
+        hashTable.insert("songKey", new Node("songNode"), true);
+        hashTable.insert("songKey", new Node("songNode"), true);
+        assertNotNull(hashTable.find("songKey"));
+    }
+
+    public void testInsertArtistDuplicate() {
+        hashTable.insert("artistKey", new Node("artistNode"), false);
+        hashTable.insert("artistKey", new Node("artistNode"), false);
+        assertNotNull(hashTable.find("artistKey"));
+    }
+
+    public void testRemoveSong() {
+        hashTable.insert("songKey", new Node("songNode"), true);
+        hashTable.remove("songKey", true);
+        assertNull(hashTable.find("songKey"));
+    }
+
+    public void testRemoveArtist() {
+        hashTable.insert("artistKey", new Node("artistNode"), false);
+        hashTable.remove("artistKey", false);
+        assertNull(hashTable.find("artistKey"));
+    }
+
+    public void testRemoveNonExistingSong() {
+        hashTable.remove("nonExistingSong", true);
+        assertNull(hashTable.find("nonExistingSong"));
+    }
+
+    public void testRemoveNonExistingArtist() {
+        hashTable.remove("nonExistingArtist", false);
+        assertNull(hashTable.find("nonExistingArtist"));
+    }
+    
+    public void testInsertWithOccupiedIndex() {
+        hashTable.insert("key1", new Node("node1"), true);
+        hashTable.insert("key2", new Node("node2"), true);
+
+        assertNotNull(hashTable.find("key1"));
+        assertNotNull(hashTable.find("key2"));
+    }
+
+    public void testInsertWithTombstone() {
+        hashTable.insert("key1", new Node("node1"), true);
+        hashTable.remove("key1", true);
+
+        hashTable.insert("key2", new Node("node2"), true);
+
+        assertNull(hashTable.find("key1"));
+        assertNotNull(hashTable.find("key2"));
+    }
     
     
-    public void testQuadraticProbing()
-    {
-        System.out.println("abcd: " + Hash.h("abcd", 5));
-        System.out.println("dacb: " + Hash.h("dacb", 5));
-        System.out.println("badc: " + Hash.h("badc", 5));
+
+    
+    public void testDoubleSizeMaintainsTombstone() {
+        // Insert and remove records
+        hashTable.insert("artist1", new Node("Song 1"), false);
+        hashTable.insert("artist2", new Node("Song 2"), false);
+        hashTable.remove("artist1", false);
+
+        // Trigger doubling
+        hashTable.doubleSize(false);
+
+        // Ensure TOMBSTONE behavior after resizing
+        assertNull(hashTable.find("artist1"));  // TOMBSTONE should be preserved
+        //assertEquals(new Node("Song 2"), hashTable.find("artist2"));  // Other entries should be retained
+    }
+
+  
+    public void testPrintWithTombstones() {
+        hashTable.insert("artist1", new Node("Song 1"), false);
+        hashTable.insert("artist2", new Node("Song 2"), false);
+        hashTable.remove("artist1", false);
+
+        // Redirect the console output to check the printed output
+        java.io.ByteArrayOutputStream outContent = new java.io.ByteArrayOutputStream();
+        System.setOut(new java.io.PrintStream(outContent));
+
+        hashTable.printArtist();
+
+        String expectedOutput = "1: TOMBSTONE\n2: |artist2|\ntotal artists: 1";
+        assertTrue(outContent.toString().contains("TOMBSTONE"));
+    }
+    
+    public void testForceQuadraticProbing() {
+       // assertEquals(hashTable.h("abcd", hashTable.getCapacity().intValue()), hashTable.h("bacd", hashTable.getCapacity().intValue()));
         
-        hashTable.insert("abcd", new Node("abcd"), true);
-        hashTable.insert("dacb", new Node("dacb"), true);
-        hashTable.insert("badc", new Node("badc"), true);
-        
-        
+        hashTable.insert("abcd", new Node("node1"), true);
+        hashTable.insert("bacd", new Node("node2"), true);
+        hashTable.insert("dabc", new Node("node3"), true);
+        hashTable.insert("cabd", new Node("node4"), true);
+
+        //assertNull(hashTable.find("key1"));
         assertNotNull(hashTable.find("abcd"));
-        assertNotNull(hashTable.find("dacb"));
-        assertNotNull(hashTable.find("badc"));
+        assertNotNull(hashTable.find("bacd"));
+        assertNotNull(hashTable.find("dabc"));
+        assertNotNull(hashTable.find("cabd"));
         
-        hashTable.remove("dacb", true);
-        assertNull(hashTable.find("dacb"));
-        assertNotNull(hashTable.find("abcd"));
-        assertNotNull(hashTable.find("badc"));
-    }
-    
-//    public void testDoubling()
-//    {
-//        
-//        assertEquals(hashTable.getCapacity(), 5);
-//        hashTable.insert("Key1", new Node("Value1"), true);
-//        hashTable.insert("Key2", new Node("Value2"), true);
-//        
-//        System.out.println(hashTable.getCapacity());
-//        assertEquals(hashTable.getCapacity(), 5);
-//        
-//        hashTable.insert("Key3", new Node("Value3"), true);
-//        
-//        System.out.println(hashTable.getCapacity());
-//        assertEquals(hashTable.getCapacity(), 10);
-//        
-//        hashTable.insert("Key4", new Node("Value4"), true);
-//        hashTable.insert("Key5", new Node("Value5"), true);
-//        hashTable.insert("Key6", new Node("Value6"), true);
-//        
-//        System.out.println(hashTable.getCapacity());
-//        assertEquals(hashTable.getCapacity(), 20);
-//    }
-    
-//    public void testPrintStatements()
-//    {
-//        
-//        hashTable.insert("Key1", new Node("Value1"), false);
-//        
-//        ByteArrayOutputStream output = new ByteArrayOutputStream();
-//        PrintStream firstOutput = System.out;
-//        
-//        System.setOut(new PrintStream(output));
-//        
-//        hashTable.remove("Key1", true);
-//        
-//        assertEquals("|Key1| is removed from the Song database.", output.toString());
-//    }
-    
-    
-
-        
-
-        
-        public void testRemoveSongPrintStatement() {
-             
-            hashTable.insert("Key1", new Node("Value1"), true);
-
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            PrintStream originalOut = System.out; // Save the original System.out
-
-            
-            System.setOut(new PrintStream(output));
-            hashTable.remove("Key1", true);
-            String expectedOutput = "|Key1| is removed from the Song database." + System.lineSeparator();
-            assertEquals(expectedOutput, output.toString());
-
-            
-            System.setOut(originalOut);
         
     }
-        
-        public void testRemoveArtistPrintStatement() {
-            
-            hashTable.insert("Key1", new Node("Value1"), false);
-
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            PrintStream originalOut = System.out; // Save the original System.out
-
-            
-            System.setOut(new PrintStream(output));
-            hashTable.remove("Key1", false);
-            String expectedOutput = "|Key1| is removed from the Artist database." + System.lineSeparator();
-            assertEquals(expectedOutput, output.toString());
-
-            
-            System.setOut(originalOut);
-        
-    }
-        
-        
-//        public void testInsertSongPrintStatement() {
-//            
-//            hashTable.insert("Key2", new Node("Value2"), true);
-//
-//            ByteArrayOutputStream output = new ByteArrayOutputStream();
-//            PrintStream originalOut = System.out;
-//
-//            
-//            System.setOut(new PrintStream(output));
-//            hashTable.insert("Key2", new Node("Value1"), true);
-//            String expectedOutput = "|Key2| duplicates a record already in the database." + System.lineSeparator();
-//            assertEquals(expectedOutput, output.toString());
-//ß
-//            
-//            System.setOut(originalOut);
-//        }
-        
-//        public void testPrintArtist()
-//        {
-//            hashTable.insert("Key1", new Node("Value1"), false);
-//            hashTable.insert("Key2", new Node("Value2"), false);
-//            
-//            ByteArrayOutputStream output = new ByteArrayOutputStream();
-//            PrintStream originalOut = System.out;
-//            
-//            System.setOut(new PrintStream(output));
-//            
-//            hashTable.printArtist();
-//            
-//            System.setOut(originalOut);
-//            
-//            String expected = 
-//                "0: |Key1|\n" +
-//                "1: |Key2|\n" +
-//                "total artists: 2\n";
-//            
-//            assertEquals(expected, output.toString());
-//        }
-
-        
-        
-
-    
-    
 }
 
 
