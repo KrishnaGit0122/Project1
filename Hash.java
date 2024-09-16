@@ -72,15 +72,15 @@ public class Hash {
      */
     // first if artist is there already
 
-    public void insert(String key, Node value, boolean isSong) {
+    public boolean insert(String key, Node value, boolean isSong) {
         // make sure that the key is actually something
-        if (key == null) {
-            throw new NullPointerException();
-        }
+//        if (key == null) {
+//            return f;
+//        }
         
         // check if we need to make the array size bigger
-        if (numberOfRecords >= capacity/2) {
-            this.doubleSize();
+        if (this.numberOfRecords >= this.capacity/2 ) {
+            this.doubleSize(isSong);
             
         }
         // use sfold to calculate the new index to put the new data in
@@ -94,13 +94,14 @@ public class Hash {
         while( allRecords[index] != null && allRecords[index] != TOMBSTONE) {
             // check if the same key is present already as a duplicate
             if(allRecords[index].getKey().equals(key)) {
-                if (isSong) {
-                    System.out.println(key+ "| duplicates a record already in the database.");
-                    return;
-                }
-                
-                System.out.print("|"+ key + "<SEP>");
-                return;
+//                if (isSong) {
+//                    System.out.println(key+ "| duplicates a record already in the database.");
+//                    return;
+//                }
+//                
+//                System.out.print("|"+ key + "<SEP>");
+//                return;
+                return false;
             }
             
             // if the index is already taken, use quadratic probing to find a new index
@@ -114,10 +115,10 @@ public class Hash {
         numberOfRecords++;
         if (isSong) {
             System.out.println("|"+ key+ "| is added to the Song database.");
-            return;
+            return true;
         }
         System.out.println("|"+ key+ "| is added to the Artist database.");
-        return;
+        return true;
         
     }
     
@@ -126,7 +127,7 @@ public class Hash {
     
     
     
-    public void doubleSize()
+    public void doubleSize( boolean isSong)
     {
         // initially double the capacity and make new table that size
         int doubledCap = capacity * 2;
@@ -158,8 +159,14 @@ public class Hash {
         
         allRecords = moreRecords;
         capacity = doubledCap;
-        System.out.println("Song hash table size doubled.");
-    }
+        
+        if( isSong) {
+            System.out.println("Song hash table size doubled.");
+        }
+        else {
+            System.out.println("Artist hash table size doubled."); 
+        }
+            }
     
     
     public void remove(String key, boolean isSong) {
@@ -171,13 +178,14 @@ public class Hash {
         int j = 1;
         
         
+        
         while( allRecords[index] != null) {
             // check if the same key is present already as a duplicate
             if(allRecords[index].getKey().equals(key)) {
                 allRecords[index] = TOMBSTONE;
                 numberOfRecords--;
                 
-                if (isSong) {
+                if (isSong == true) {
                     System.out.println("|"+ key+ "| is removed from the Song database.");
                     return;
                 }
@@ -273,6 +281,11 @@ public class Hash {
 
     public Number getCapacity() {
         return capacity;
+    }
+    
+    public Number getNumberOfRecords()
+    {
+        return numberOfRecords;
     }
 
     /**
